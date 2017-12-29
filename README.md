@@ -1,38 +1,84 @@
-Role Name
-=========
+Ansible Role Maven
+==================
 
-A brief description of the role goes here.
+Installs Apache Maven
+Get from Ansible galaxy like so:
+
+```
+ansible-galaxy install shelleg.maven
+```
+
+Please test the role before creating a Pull Request by issuing:
+
+```
+chmod +x ./tests/geerlingguy.test/ansible-role-test.sh
+cleanup=false container_id=$(date +%s) distro=centos7 ./tests/geerlingguy.test/ansible-role-test.sh
+```
+
+Build Status:
+-------------
+Currently only supports Ansible lint, need to add distributions (work started in `.travis.yml`)
+
+[![Build Status](https://travis-ci.org/shelleg/ansible-role-maven.svg?branch=refactor-n-test)](https://travis-ci.org/shelleg/ansible-role-maven)
+
+[![Code Climate](https://codeclimate.com/github/shelleg/ansible-role-gradle/badges/gpa.svg)](https://codeclimate.com/github/shelleg/ansible-role-gradle) [![Issue Count](https://codeclimate.com/github/shelleg/ansible-role-gradle/badges/issue_count.svg)](https://codeclimate.com/github/shelleg/ansible-role-gradle) [![Test Coverage](https://codeclimate.com/github/shelleg/ansible-role-gradle/badges/coverage.svg)](https://codeclimate.com/github/shelleg/ansible-role-gradle/coverage)
 
 Requirements
 ------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+JAVA Oracle
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Version related:
+
+* `maven_version: 3.5.2`
+* `gradle_checksum: sha256:dd9b24950dc4fca7d1ca5f1ccd57ca8c5b9eb407e3e6e0f48174fde4bb19ed06`
+
+Defaults:
+
+* `gradle_binary: "gradle-{{ gradle_version }}-all.zip"`
+* `gradle_download_url: "https://services.gradle.org/distributions/{{ gradle_binary }}"`
+
+Installation directory:
+
+* `gradle_base_dir: /usr/local/share/`
+* `gradle_extract_dir:  "gradle-{{ gradle_version }}"`
+* `gradle_link: /usr/local/bin/gradle`
 
 Dependencies
 ------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Requires Java in order to run.
+Personally I do not believe in dependencies from meta/main.yml
+considering this looks too much like black magic ...
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Including an example of how to use this role:
+``` shell
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+---
+- hosts: localhost
+  remote_user: root
+  roles:
+    - java
+    - gradle
+```
+
+Changelog:
+----------
+
+* initial release - initial release support ubutnu 14/16.04 && centos 6/7
 
 License
 -------
 
-BSD
+[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Haggai Philip Zagury <hagzag@tikalk.com> part of
+[Shelleg](https://github.com/shelleg/shelleg) project.
+see also [Shellg Docs](http://shelleg.github.io/shellegDoc/)
