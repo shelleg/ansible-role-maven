@@ -2,11 +2,12 @@
 # defaults file for ansible-role-maven
 
 maven_version_major: "3"
-maven_version_minor: "3"
-maven_version_patch: "9"
+maven_version_minor: "5"
+maven_version_patch: "2"
 maven_version: "{{ maven_version_major }}.{{ maven_version_minor }}.{{ maven_version_patch }}"
 # http://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.zip
 maven_binary: "apache-maven-{{ maven_version }}-bin.zip"
+maven_download: "/tmp/{{ maven_binary }}"
 maven_download_url: "http://archive.apache.org/dist/maven/maven-{{ maven_version_major }}/{{ maven_version }}/binaries/{{ maven_binary }}"
 maven_base_dir: /usr/local/share/
 maven_extract_dir:  "apache-maven-{{ maven_version }}"

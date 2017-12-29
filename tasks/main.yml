@@ -1,27 +1,33 @@
 ---
 # tasks file for ansible-role-maven
 
-- name: "{{ maven_version }} checksum"
+- name: "set checksum based on var"
   set_fact:
-    maven_checksum: e7ebd0b8d6811b42a5dad91fb27fe9b4
-  when: ("{{ maven_version }}" == "3.3.9")
+    maven_checksum: 'sha1:e7ebd0b8d6811b42a5dad91fb27fe9b4'
+  when: maven_version == "3.3.9"
 
-- name: "{{ maven_version }} checksum"
+- name: "set checksum based on var"
   set_fact:
-    maven_checksum: c062cb57ca81615cc16500af332b93bd
-  when: ("{{ maven_version }}" == "3.5.0")
+    maven_checksum: 'sha1:c062cb57ca81615cc16500af332b93bd'
+  when: maven_version == "3.5.0"
+
+- name: "set checksum based on var"
+  set_fact:
+    maven_checksum: 'sha1:23adadc90b7f79ad84bd14574581d0145611bfda'
+  when: maven_version == "3.5.2"
+
+- name: "Check maven version is present"
+  stat:
+    path: "{{ maven_link }}"
+  register: maven_present
+
+- name: "Check maven version is present"
+  shell: "{{ maven_link }} -v | grep {{ maven_version }}"
+  changed_when: false
+  register: maven_version_check
+  when: maven_present.stat.exists
 
 - block:
-
-  - name: "Check if maven is alresy installed"
-    shell: "{{ maven_link }} -v | grep {{ maven_version }}"
-    args:
-      executable: /bin/bash
-
-  - debug:
-      msg: "maven {{ maven_version }} is installed"
-
-  rescue:
 
   - name: "Install unzip"
     package:
@@ -29,8 +35,14 @@
       state: latest
 
   - name: "Download maven {{ maven_version }}"
+    get_url:
+      url: "{{ maven_download_url }}"
+      dest: "{{ maven_download }}"
+      checksum: "{{ maven_checksum }}"
+
+  - name: "Extract maven {{ maven_version }}"
     unarchive:
-      src: "{{ maven_download_url }}"
+      src: "{{ maven_download }}"
       dest: "{{ maven_base_dir }}"
       remote_src: True
 
@@ -44,10 +56,19 @@
 
   - name: "Validate maven version"
     shell: "{{ maven_link }} -v | grep {{ maven_version }}"
-    args:
-      executable: /bin/bash
     register: maven_ver
 
   - fail:
       msg: "Seems to be maven {{ maven_version }} is missing ... aborting"
     when: maven_ver.rc != 0
+
+  when: not maven_present.stat.exists
+
+- name: "Validate maven version"
+  shell: "{{ maven_link }} -v | grep {{ maven_version }}"
+  changed_when: False
+  register: maven_ver
+
+- debug:
+    msg: "Maven {{ maven_version }} is installed"
+  when: maven_ver.rc == 0
